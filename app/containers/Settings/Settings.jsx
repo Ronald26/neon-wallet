@@ -52,15 +52,12 @@ type Props = {
   selectedNode: string,
   net: string,
   networkId: string,
-  soundEnabled: boolean,
-  setSoundSetting: boolean => any,
 }
 
 type State = {
   selectedCurrency: SelectOption,
   selectedTheme: SelectOption,
   selectedExplorer: SelectOption,
-  soundEnabled: boolean,
 }
 
 export default class Settings extends Component<Props, State> {
@@ -81,7 +78,6 @@ export default class Settings extends Component<Props, State> {
       value: this.props.explorer,
       label: this.props.explorer,
     },
-    soundEnabled: this.props.soundEnabled,
   }
 
   saveWalletRecovery = () => {
@@ -183,12 +179,6 @@ export default class Settings extends Component<Props, State> {
     setTheme(option.value)
   }
 
-  updateSoundSetting = (soundEnabled: boolean) => {
-    this.setState({ soundEnabled })
-    const { setSoundSetting } = this.props
-    setSoundSetting(soundEnabled)
-  }
-
   openTokenModal = () => {
     this.props.showModal(MODAL_TYPES.TOKEN)
   }
@@ -270,18 +260,6 @@ export default class Settings extends Component<Props, State> {
                     transparent
                     options={parsedThemeOptions}
                     value={this.state.selectedTheme}
-                  />
-                </div>
-              </SettingsItem>
-              <SettingsItem
-                renderIcon={() => <VolumeIcon />}
-                noBorderBottom
-                title="SOUND"
-              >
-                <div className={styles.settingsSwitchContainer}>
-                  <Switch
-                    checked={this.state.soundEnabled}
-                    handleCheck={this.updateSoundSetting}
                   />
                 </div>
               </SettingsItem>
