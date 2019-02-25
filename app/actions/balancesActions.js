@@ -1,16 +1,12 @@
 // @flow
 import { api } from '@cityofzion/neon-js'
-import { extend, isEmpty, get } from 'lodash-es'
+import { extend, get } from 'lodash-es'
 import { createActions } from 'spunky'
-import { Howl } from 'howler'
-// eslint-disable-next-line $FlowFixMe
-import coinAudioSample from '../assets/audio/coin.wav'
 
 import { getSettings } from './settingsActions'
 import { getNode, getRPCEndpoint } from './nodeStorageActions'
 import { ASSETS } from '../core/constants'
 import { COIN_DECIMAL_LENGTH } from '../core/formatters'
-import { toBigNumber } from '../core/math'
 import { findNetworkByLabel } from '../core/networks'
 
 const MAX_SCRIPT_HASH_CHUNK_SIZE = 5
@@ -21,72 +17,16 @@ type Props = {
   tokens: Array<TokenItemType>,
 }
 
-let inMemoryBalances = {}
-let hasTriggeredAudio = false
-let inMemoryAddress
-let inMemoryNetwork
-let sound
-
-// TODO: leverage a better solution to supress warnings stemming
-// from jest tests
-if (process.env.NODE_ENV !== 'test') {
-  sound = new Howl({
-    src: [coinAudioSample],
-  })
-}
-
 export const ID = 'balances'
 
-export function resetBalanceState() {
-  hasTriggeredAudio = false
-  inMemoryAddress = undefined
-  inMemoryNetwork = undefined
-  inMemoryBalances = {}
-}
-
-function resetAudioTrigger() {
-  hasTriggeredAudio = false
-}
-
-function determineIfBalanceUpdated(
-  balanceData: Object,
-  soundEnabled: boolean,
-  networkHasChanged: boolean | void,
-  addressHasChanged: boolean | void,
-) {
-  if (
-    isEmpty(inMemoryBalances) ||
-    hasTriggeredAudio ||
-    !soundEnabled ||
-    networkHasChanged ||
-    addressHasChanged
-  ) {
-    return undefined
-  }
-  Object.keys(balanceData).forEach(key => {
-    const inMemoryBalance = toBigNumber(inMemoryBalances[key] || 0)
-    if (toBigNumber(balanceData[key]).greaterThan(inMemoryBalance)) {
-      sound.play()
-      hasTriggeredAudio = true
-    }
-  })
-}
-
 async function getBalances({ net, address }: Props) {
-  const { soundEnabled, tokens } = await getSettings()
+  const { tokens } = await getSettings()
   const network = findNetworkByLabel(net)
 
   let endpoint = await getNode(net)
   if (!endpoint) {
     endpoint = await getRPCEndpoint(net)
   }
-
-  let networkHasChanged = true
-  if (net === inMemoryNetwork) networkHasChanged = false
-
-  let adressHasChanged = false
-  if (!inMemoryAddress) adressHasChanged = false
-  else if (inMemoryAddress !== address) adressHasChanged = true
 
   const chunks = tokens
     .filter(token => !token.isUserGenerated && token.networkId === network.id)
@@ -113,15 +53,6 @@ async function getBalances({ net, address }: Props) {
     Object.keys(currBalance).forEach(key => {
       const foundToken = tokens.find(token => token.symbol === key)
       if (foundToken && currBalance[key]) {
-        determineIfBalanceUpdated(
-          // $FlowFixMe
-          { [foundToken.symbol]: currBalance[key] },
-          soundEnabled,
-          networkHasChanged,
-          adressHasChanged,
-        )
-        // $FlowFixMe
-        inMemoryBalances[foundToken.symbol] = currBalance[key]
         accum.push({
           [foundToken.scriptHash]: {
             ...foundToken,
@@ -155,13 +86,6 @@ async function getBalances({ net, address }: Props) {
     }
   }
   userGeneratedTokenInfo.forEach(token => {
-    determineIfBalanceUpdated(
-      { [token.symbol]: token.balance },
-      soundEnabled,
-      networkHasChanged,
-      adressHasChanged,
-    )
-    inMemoryBalances[token.symbol] = token.balance
     parsedTokenBalances.push({
       [token.scriptHash]: {
         ...token,
@@ -184,23 +108,6 @@ async function getBalances({ net, address }: Props) {
     { [ASSETS.NEO]: neoBalance },
     { [ASSETS.GAS]: gasBalance },
   ]
-  determineIfBalanceUpdated(
-    { [ASSETS.NEO]: neoBalance },
-    soundEnabled,
-    networkHasChanged,
-    adressHasChanged,
-  )
-  inMemoryBalances[ASSETS.NEO] = neoBalance
-  determineIfBalanceUpdated(
-    { [ASSETS.GAS]: gasBalance },
-    soundEnabled,
-    networkHasChanged,
-    adressHasChanged,
-  )
-  inMemoryBalances[ASSETS.GAS] = gasBalance
-
-  resetAudioTrigger()
-  inMemoryNetwork = net
   // $FlowFixMe
   return extend({}, ...parsedTokenBalances, ...parsedAssets)
 }

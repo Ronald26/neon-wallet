@@ -4,7 +4,6 @@ import { noop } from 'lodash-es'
 import { createActions } from 'spunky'
 
 import { bindArgsFromN } from '../util/bindHelpers'
-import { resetBalanceState } from './balancesActions'
 import { upgradeNEP6AddAddresses } from '../core/account'
 import { validatePassphraseLength } from '../core/wallet'
 import { ledgerNanoSCreateSignatureAsync } from '../ledger/ledgerNanoS'
@@ -96,10 +95,7 @@ export const ledgerLoginActions = createActions(
   },
 )
 
-export const logoutActions = createActions(ID, () => (): AccountType => {
-  resetBalanceState()
-  return null
-})
+export const logoutActions = createActions(ID, () => (): AccountType => null)
 
 // TODO: Better way to expose action data than to make a faux function?  One idea is to change
 //       `withData` to accept the `ID` exported from this file instead of a generated action.

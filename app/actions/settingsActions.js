@@ -19,7 +19,6 @@ type Settings = {
   tokens: Array<TokenItemType>,
   version: string,
   theme: string,
-  soundEnabled: boolean,
 }
 
 const STORAGE_KEY = 'settings'
@@ -30,7 +29,6 @@ const DEFAULT_SETTINGS: () => Promise<Settings> = async () => ({
   blockExplorer: DEFAULT_EXPLORER,
   tokens: await getDefaultTokens(),
   version,
-  soundEnabled: true,
 })
 
 export const getSettings = async (): Promise<Settings> => {
