@@ -120,6 +120,7 @@
     "recharts": "1.1.0",
     "recompose": "0.26.0",
     "redux": "3.7.2",
+    "redux-actions": "^2.6.5",
     "redux-logger": "3.0.6",
     "redux-saga": "0.16.0",
     "redux-thunk": "2.2.0",

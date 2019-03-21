@@ -1,5 +1,6 @@
 // @flow
 import { compose } from 'recompose'
+import { connect } from 'react-redux'
 
 import Home from './Home'
 import authActions from '../../actions/authActions'
@@ -7,7 +8,17 @@ import withLoadingProp from '../../hocs/withLoadingProp'
 import withThemeData from '../../hocs/withThemeData'
 import pureStrategy from '../../hocs/helpers/pureStrategy'
 
+import { wifLogin } from '../../actions/temp/auth'
+
+const mapDispatchToProps = {
+  wifLogin,
+}
+
 export default compose(
+  connect(
+    null,
+    mapDispatchToProps,
+  ),
   withLoadingProp(authActions, { strategy: pureStrategy }),
   withThemeData(),
 )(Home)
