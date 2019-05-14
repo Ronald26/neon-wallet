@@ -33,7 +33,9 @@ export default class HeaderBar extends React.PureComponent<Props> {
     return (
       <React.Fragment>
         {!isMainNetwork(networkId) && (
-          <div className={styles.currentNetwork}>{net}</div>
+          <div id="current-network" className={styles.currentNetwork}>
+            {net}
+          </div>
         )}
         <div className={styles.headerBar}>
           {label ? <h3> {label}</h3> : renderLeftContent()}
