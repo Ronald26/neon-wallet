@@ -48,8 +48,7 @@ The latest release binaries can be found [here](https://neonwallet.com/), to bui
 
 ### Required Tools and Dependencies
 
-- Node (This project uses the current LTS node version, which is `v6.11.0`)
-- Yarn (https://yarnpkg.com/lang/en/docs/install/)
+- Node (This project uses the current LTS node version, which is `v10.x`)
 
 ### Developing and Running
 
@@ -57,24 +56,24 @@ Execute these commands in the project's root directory:
 
 Setup:
 
-- `yarn install` - Installing node dependencies
+- `npm run install` - Installing node dependencies
   - If you get any errors related to the node-hid package, please check installation instructions here: https://github.com/node-hid/node-hid#compiling-from-source. On Linux you may need to run `sudo apt install libusb-1.0-0 libusb-1.0-0-dev`, for example.
 - `./node_modules/.bin/electron -v` confirm electron is version 1.8.4
 - Electron may take anywhere from 10 to 15 seconds to fully start using the commands below. Be patient.
 
 Developing:
 
-- `yarn dev` - Start the application in development mode with hot reloading enabled
-  - There is a known condition that may arise on Linux systems where `yarn dev` builds but Neon never opens. Try using `yarn dev >/dev/null`.
+- `npm run dev` - Start the application in development mode with hot reloading enabled
+  - There is a known condition that may arise on Linux systems where `npm run dev` builds but Neon never opens. Try using `npm run dev >/dev/null`.
 
 Running (for production):
 
-- `yarn assets`
-- `yarn start`
+- `npm run assets`
+- `npm run start`
 
 Testing:
 
-- `yarn test` or `yarn run test-watch` for live testing.
+- `npm run test` or `npm run run test-watch` for live testing.
 
 ### Support
 

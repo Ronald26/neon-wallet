@@ -27,18 +27,17 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: neon-wallet-dependencies-cache-{{ checksum "yarn.lock" }}
+          key: neon-wallet-dependencies-cache-{{ checksum "package-lock.json" }}
       - run: apt-get -y update
       - run: apt-get -y install libusb-1.0-0-dev icnsutils graphicsmagick libudev-dev
-      - run: yarn config delete proxy
-      - run: yarn install --frozen-lockfile --network-timeout 1000000 --network-concurrency 1
-      - run: yarn lint
-      - run: yarn flow
-      - run: yarn dist
+      - run: npm run config delete proxy
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run flow
+      - run: npm run dist
       - save_cache:
-          key: neon-wallet-dependencies-cache-{{ checksum "yarn.lock" }}
+          key: neon-wallet-dependencies-cache-{{ checksum "package-lock.json" }}
           paths:
-            - /usr/local/share/.cache/yarn/v2
             - ./node_modules
       - persist_to_workspace:
           root: *workspace_root
@@ -50,11 +49,11 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: neon-wallet-dependencies-cache-{{ checksum "yarn.lock" }}
+          key: neon-wallet-dependencies-cache-{{ checksum "package-lock.json" }}
       - run: apt-get -y update
       - run: apt-get -y install libusb-1.0-0-dev graphicsmagick libudev-dev
       - run: apt-get -y install libxtst6 libxss1 libgtk2.0-0 libnss3 libasound2 libgconf-2-4
-      - run: yarn test-ci
+      - run: npm run test-ci
       # TODO: add these steps back when e2e test suite is functional
       # - run:
       #     name: Running Xvfb for e2e test
@@ -67,22 +66,22 @@ jobs:
       #       yarn assets
       #       export DISPLAY=:99
       #       yarn test:e2e
-    store_artifacts:
-      - path: artifacts/
-      - destination: yarnpkg
+    # store_artifacts:
+    #   - path: artifacts/
+    #   - destination: yarnpkg
 
   deploy_win64:
     <<: *win_config
     steps:
       - checkout
       - restore_cache:
-          key: neon-wallet-dependencies-cache-{{ checksum "yarn.lock" }}
+          key: neon-wallet-dependencies-cache-{{ checksum "package-lock.json" }}
       - run: apt-get -y update
       - run: apt-get -y install libusb-1.0-0-dev icnsutils graphicsmagick libudev-dev
       - run: apt-get install --no-install-recommends -y gcc-multilib g++-multilib
-      - run: yarn install --frozen-lockfile --network-timeout 1000000 --network-concurrency 1
-      - run: yarn assets
-      - run: yarn build -w --x64
+      - run: npm ci
+      - run: npm run assets
+      - run: npm run build -w --x64
       - store_artifacts:
           path: dist
           destination: build
@@ -92,11 +91,11 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: neon-wallet-dependencies-cache-{{ checksum "yarn.lock" }}
+          key: neon-wallet-dependencies-cache-{{ checksum "package-lock.json" }}
       - run: apt-get -y update
       - run: apt-get -y install libusb-1.0-0-dev icnsutils graphicsmagick libudev-dev
-      - run: yarn install --frozen-lockfile --network-timeout 1000000 --network-concurrency 1
-      - run: yarn dist
+      - run: npm ci
+      - run: npm run dist
       - store_artifacts:
           path: dist
           destination: build
